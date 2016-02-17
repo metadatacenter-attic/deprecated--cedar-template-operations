@@ -47,17 +47,19 @@ public class TemplateFieldServiceMongoDB extends GenericTemplateServiceMongoDB<S
   public void saveNewFieldsAndReplaceIds(JsonNode genericInstance) throws IOException {
 
     JsonNode properties = genericInstance.get("properties");
-    Iterator<Map.Entry<String, JsonNode>> it = properties.fields();
-    while (it.hasNext()) {
-      Map.Entry<String, JsonNode> entry = it.next();
-      JsonNode fieldCandidate = entry.getValue();
-      // If the entry is an object
-      if (fieldCandidate.isObject()) {
-        if (fieldCandidate.get("@id") != null) {
-          String id = fieldCandidate.get("@id").asText();
-          if (id != null && id.indexOf(CedarConstants.TEMP_ID_PREFIX) == 0) {
-            JsonNode removeId = ((ObjectNode) fieldCandidate).remove("@id");
-            templateFieldDao.create(fieldCandidate);
+    if (properties != null) {
+      Iterator<Map.Entry<String, JsonNode>> it = properties.fields();
+      while (it.hasNext()) {
+        Map.Entry<String, JsonNode> entry = it.next();
+        JsonNode fieldCandidate = entry.getValue();
+        // If the entry is an object
+        if (fieldCandidate.isObject()) {
+          if (fieldCandidate.get("@id") != null) {
+            String id = fieldCandidate.get("@id").asText();
+            if (id != null && id.indexOf(CedarConstants.TEMP_ID_PREFIX) == 0) {
+              JsonNode removeId = ((ObjectNode) fieldCandidate).remove("@id");
+              templateFieldDao.create(fieldCandidate);
+            }
           }
         }
       }
